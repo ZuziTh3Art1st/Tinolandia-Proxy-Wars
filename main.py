@@ -293,11 +293,17 @@ class AttackRequest(BaseModel):
     attacker_country: str
     defender_country: str
 
+# --- ROOT HEALTH CHECK ---
+
+@app.get("/")
+def root_check():
+    """Root endpoint verifying backend server status."""
+    return {"status": "online", "message": "Tinolandia Proxy Wars API is live"}
+
 # --- AUTH ENDPOINTS ---
 
 @app.post("/api/auth/signup")
 def user_signup(req: AuthRequest):
-    """Registers a new user account with Firebase Auth[cite: 5]."""
     if USE_FIREBASE:
         try:
             user = auth.create_user(email=req.email, password=req.password)
@@ -310,7 +316,6 @@ def user_signup(req: AuthRequest):
 
 @app.post("/api/auth/login")
 def user_login(req: AuthRequest):
-    """Authenticates existing user and returns Auth session token[cite: 5]."""
     if USE_FIREBASE and FIREBASE_WEB_API_KEY != "your_firebase_web_api_key_here":
         url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_WEB_API_KEY}"
         res = requests.post(url, json={"email": req.email, "password": req.password, "returnSecureToken": True})
